@@ -13,6 +13,7 @@ let regex = {
   cvv: /^([0-9]{3})$/,
   domainName:
     /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
+  cardType: /^[a-zA-Z]+$/,
 };
 
 module.exports = regex;
