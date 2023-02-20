@@ -6,22 +6,23 @@ const password = process.env.password;
 const host = process.env.host;
 const database = process.env.database;
 
-async function connectionToMysql() {
-  var connection = mysql.createConnection({
-    host: host,
-    user: user,
-    password: password,
-    database: database,
-  });
+function connectionToMysql() {
+  return new Promise((resolve, reject) => {
+    var connection = mysql.createConnection({
+      host: host,
+      user: user,
+      password: password,
+      database: database,
+    });
 
-  connection.connect(function (err) {
-    if (err) {
-      throw err.message;
-    }
-    console.log("Connected to Card91 database!");
+    connection.connect(function (err) {
+      if (err) {
+        return reject(err);
+      }
+      console.log("Connected to card91 database!");
+      return resolve(connection);
+    });
   });
-
-  return connection;
 }
 
 module.exports = connectionToMysql;

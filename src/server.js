@@ -198,3 +198,21 @@ app.post("/create/transaction", async (req, res) => {
     });
   }
 });
+
+//get total customers
+app.get("/users", async (req, res) => {
+  let data = await dbQuery.getTotalEntityDetails(db, "user");
+  res.status(200).send(data);
+});
+
+//get total cards details
+app.get("/cards", async (req, res) => {
+  let data = await dbQuery.getTotalEntityDetails(db, "card");
+  res.status(200).send(data);
+});
+
+//get total transactions
+app.get("/transactions", async (req, res) => {
+  let data = await dbQuery.getTotalEntityDetails(db, "trans_history");
+  res.status(200).send(data);
+});

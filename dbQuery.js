@@ -1,5 +1,3 @@
-const datahash = require("./datahash");
-
 //getting specific row of an entity with the given constraint
 async function getEntityDetails(db, body, entity) {
   let dbQuery;
@@ -104,24 +102,22 @@ async function getUserAndCardDetails(db, body) {
   }
 }
 
-//getting last row of an entity
-async function getTransHistoryDetails(db, body) {
-  try {
-    let dbQuery = `select * from trans_history order by id desc limit 1 offset 0`;
-    return new Promise((resolve, reject) => {
-      db.query(dbQuery, (err, data) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(data);
-      });
+async function getTotalEntityDetails(db, Entity) {
+  let query = `Select * from ${Entity}`;
+  return new Promise((resolve, reject) => {
+    db.query(query, (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(result);
     });
-  } catch (e) {
-    console.log(e.message);
-  }
+  });
 }
 
-module.exports.getEntityDetails = getEntityDetails;
-module.exports.createRowinEntity = createRowinEntity;
-module.exports.getLastRowOfEntity = getLastRowOfEntity;
-module.exports.getUserAndCardDetails = getUserAndCardDetails;
+module.exports = {
+  getEntityDetails,
+  createRowinEntity,
+  getLastRowOfEntity,
+  getUserAndCardDetails,
+  getTotalEntityDetails,
+};
