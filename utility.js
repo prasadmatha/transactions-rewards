@@ -5,6 +5,7 @@ let regex = require("./regex");
 let mandatoryFields = {
   user: ["name", "mobile", "email", "password"],
   card: ["nameOnCard", "cardType", "cardNumber", "email", "expDate", "cvv"],
+  trans: ["email", "cardType", "cardNumber", "transAmount"],
 };
 
 //unique fields of entities

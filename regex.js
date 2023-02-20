@@ -14,6 +14,7 @@ let regex = {
   domainName:
     /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
   cardType: /^[a-zA-Z]+$/,
+  transAmount: /^[1-9]/,
 };
 
 module.exports = regex;

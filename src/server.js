@@ -120,81 +120,92 @@ app.post("/create/card", async (req, res) => {
 
 //creating transaction
 app.post("/create/transaction", async (req, res) => {
-  let { transAmount } = req.body;
-  let result = await dbQuery.getEntityDetails(db, req.body, "reward_rules");
-  let MTA = result[0].MTA; //get minimum transaction amount
-  let keys = Object.keys(result[0]); //keys of reward rules row object
-  let transactionAmountLimit = undefined;
-  let ruleFound = undefined; //to check for cash back rule found for this card
-  let ruleApplicable = undefined; //to assign cash back rule of this card
-  let userFound = await dbQuery.getUserAndCardDetails(db, req.body);
-  if (userFound.length) {
-    req.body.user_id = userFound[0].user_id;
-    req.body.card_id = userFound[0].id;
-    if (transAmount >= MTA) {
-      let cashback;
-      //if transaction amount >= minimum transaction amount
-      keys.forEach((each) => {
-        //finding rule applicable for cashback
-        if (each.endsWith("%_MTA")) {
-          let percentageOfMTA = parseInt(each.split("%"));
-          if (
-            (percentageOfMTA * MTA) / 100 >= transAmount &&
-            ruleFound == undefined
-          ) {
-            transactionAmountLimit = percentageOfMTA; //found x% of miniumum transaction amount to find cash back rule.
-            ruleFound = `${transactionAmountLimit}%_MTA`; //rule found
-            ruleApplicable = result[0][ruleFound]; //rule assigned
-            cashback = utility.processCashback(ruleApplicable, transAmount);
-            req.body.cashback = cashback;
+  let body = req.body;
+  let mandatoryFieldsErrors = utility.mandatoryFields(body, "trans"); //check mandatory fields
+  if (!mandatoryFieldsErrors.length) {
+    let { transAmount } = req.body;
+    let result = await dbQuery.getEntityDetails(db, req.body, "reward_rules");
+    let MTA = result[0].MTA; //get minimum transaction amount
+    let keys = Object.keys(result[0]); //keys of reward rules row object
+    let transactionAmountLimit = undefined;
+    let ruleFound = undefined; //to check for cash back rule found for this card
+    let ruleApplicable = undefined; //to assign cash back rule of this card
+    let userFound = await dbQuery.getUserAndCardDetails(db, req.body);
+    if (userFound.length) {
+      req.body.user_id = userFound[0].user_id;
+      req.body.card_id = userFound[0].id;
+      if (transAmount >= MTA) {
+        let cashback;
+        //if transaction amount >= minimum transaction amount
+        keys.forEach((each) => {
+          //finding rule applicable for cashback
+          if (each.endsWith("%_MTA")) {
+            let percentageOfMTA = parseInt(each.split("%"));
+            if (
+              (percentageOfMTA * MTA) / 100 >= transAmount &&
+              ruleFound == undefined
+            ) {
+              transactionAmountLimit = percentageOfMTA; //found x% of miniumum transaction amount to find cash back rule.
+              ruleFound = `${transactionAmountLimit}%_MTA`; //rule found
+              ruleApplicable = result[0][ruleFound]; //rule assigned
+              cashback = utility.processCashback(ruleApplicable, transAmount);
+              req.body.cashback = cashback;
+            }
           }
+        });
+        if (ruleFound == undefined) {
+          ruleApplicable = result[0]["1000%_MTA"];
+          cashback = utility.processCashback(ruleApplicable, transAmount);
+          req.body.cashback = cashback;
         }
-      });
-      if (ruleFound == undefined) {
-        ruleApplicable = result[0]["1000%_MTA"];
-        cashback = utility.processCashback(ruleApplicable, transAmount);
-        req.body.cashback = cashback;
+        let dataTime = new Date().toLocaleString();
+        req.body.dateTime = dataTime;
+        let transHistoryData = await dbQuery.getLastRowOfEntity(
+          db,
+          "trans_history"
+        );
+        let id = transHistoryData.length ? transHistoryData[0].id + 1 : 1;
+        req.body.id = id;
+        let createRowInTransHistory = await dbQuery.createRowinEntity(
+          db,
+          req.body,
+          "trans_history"
+        );
+        res.status(200).send({
+          isSuccessful: true,
+          message: `Transaction successful, received cashback :: ${cashback}/-`,
+        });
+      } else {
+        let dataTime = new Date().toLocaleString();
+        req.body.dateTime = dataTime;
+        let transHistoryData = await dbQuery.getLastRowOfEntity(
+          db,
+          "trans_history"
+        );
+        let id = transHistoryData.length ? transHistoryData[0].id + 1 : 1;
+        req.body.id = id;
+        req.body.cashback = 0;
+        let createRowInTransHistory = await dbQuery.createRowinEntity(
+          db,
+          req.body,
+          "trans_history"
+        );
+        res
+          .status(200)
+          .send({ isSuccessful: true, message: "Transaction successful" });
       }
-      let dataTime = new Date().toLocaleString();
-      req.body.dateTime = dataTime;
-      let transHistoryData = await dbQuery.getLastRowOfEntity(
-        db,
-        "trans_history"
-      );
-      let id = transHistoryData.length ? transHistoryData[0].id + 1 : 1;
-      req.body.id = id;
-      let createRowInTransHistory = await dbQuery.createRowinEntity(
-        db,
-        req.body,
-        "trans_history"
-      );
-      res.status(200).send({
-        isSuccessful: true,
-        message: `Transaction successful, received cashback :: ${cashback}/-`,
-      });
     } else {
-      let dataTime = new Date().toLocaleString();
-      req.body.dateTime = dataTime;
-      let transHistoryData = await dbQuery.getLastRowOfEntity(
-        db,
-        "trans_history"
-      );
-      let id = transHistoryData.length ? transHistoryData[0].id + 1 : 1;
-      req.body.id = id;
-      req.body.cashback = 0;
-      let createRowInTransHistory = await dbQuery.createRowinEntity(
-        db,
-        req.body,
-        "trans_history"
-      );
-      res
-        .status(200)
-        .send({ isSuccessful: true, message: "Transaction successful" });
+      res.status(400).send({
+        isSuccessful: false,
+        message: "Invalid email or card number or card type",
+      });
     }
   } else {
     res.status(400).send({
       isSuccessful: false,
-      message: "Invalid email or card number or card type",
+      message: `Please provide mandatory fields with valid data :: ${mandatoryFieldsErrors.join(
+        ", "
+      )}`,
     });
   }
 });
