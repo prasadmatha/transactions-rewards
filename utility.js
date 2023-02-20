@@ -60,6 +60,7 @@ module.exports.checkDuplicateFields = checkForDuplicateFields = (
   return errors;
 };
 
+//process cashback for a transaction
 module.exports.processCashback = function processCashback(rule, TA) {
   let cashback;
   if (rule.startsWith("min")) {
