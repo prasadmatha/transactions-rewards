@@ -1,3 +1,4 @@
+const { option } = require("yargs");
 let regex = require("./regex");
 
 //mandatory fields of entities
@@ -57,4 +58,31 @@ module.exports.checkDuplicateFields = checkForDuplicateFields = (
     });
   });
   return errors;
+};
+
+module.exports.processCashback = function processCashback(rule, TA) {
+  let cashback;
+  if (rule.startsWith("min")) {
+    let [option1, option2, option3] = rule.split(" ");
+    option2 = parseInt(option2);
+    option3 = (parseInt(option3.split("%")[0]) * TA) / 100;
+    cashback = Math.min(option2, option3);
+  } else if (rule.startsWith("max")) {
+    let [option1, option2, option3] = rule.split(" ");
+    option2 = parseInt(option2);
+    option3 = (parseInt(option3.split("%")[0]) * TA) / 100;
+    cashback = Math.max(option2, option3);
+  } else if (rule.endsWith("%_TA") && rule.includes(",")) {
+    let [option1, option2] = rule.split(",");
+    option1 = parseInt(option1);
+    option2 = (parseInt(option2.split("%")[0]) * TA) / 100;
+    cashback = option1 + option2;
+  } else if (rule.endsWith("%_TA")) {
+    rule = parseInt(rule.split("_")[0]);
+    cashback = (rule * TA) / 100;
+  } else {
+    rule = parseInt(rule);
+    cashback = rule;
+  }
+  return Math.ceil(cashback);
 };
