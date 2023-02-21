@@ -1,9 +1,5 @@
 import { getData, createRowInTable } from "../database.js";
-import {
-  checkMandatoryFields,
-  checkForDuplicateFields,
-  processCashback,
-} from "../utility.js";
+import { checkMandatoryFields, checkForDuplicateFields } from "../utility.js";
 import { encryptData, compare } from "../datahash.js";
 import dotenv from "dotenv";
 

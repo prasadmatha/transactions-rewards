@@ -38,13 +38,21 @@ export async function getUserWithCardNumber(body) {
 export const createRowInTable = async (body, entity) => {
   let query;
   if (entity == "user") {
-    query = `insert into user (id,name,mobile,email,password,status) values(${body.id},'${body.name}',
-    ${body.mobile},'${body.email}','${body.password}','Active')`;
+    query = `insert into user (id,name,mobile,email,password,status) values(${
+      body.id
+    },'${body.name}',
+    ${body.mobile},'${body.email.toLowerCase()}','${body.password}','Active')`;
     const result = await pool.query(query);
     return result[0];
   } else if (entity == "card") {
-    query = `insert into card (id,user_id,card_number,name_on_card,card_type,exp_date,cvv,status) values(${body.id},${body.userID},
-    '${body.cardNumber}','${body.nameOnCard}','${body.cardType}','${body.expDate}',${body.cvv},'Active')`;
+    query = `insert into card (id,user_id,card_number,name_on_card,card_type,exp_date,cvv,status) values(${
+      body.id
+    },${body.userID},
+    '${body.cardNumber}','${
+      body.nameOnCard
+    }','${body.cardType.toLowerCase()}','${body.expDate}',${
+      body.cvv
+    },'Active')`;
     const result = await pool.query(query);
     return result[0];
   } else if (entity == "trans_history") {

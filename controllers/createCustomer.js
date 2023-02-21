@@ -1,10 +1,6 @@
 import { getData, createRowInTable } from "../database.js";
-import {
-  checkMandatoryFields,
-  checkForDuplicateFields,
-  processCashback,
-} from "../utility.js";
-import { encryptData, compare } from "../datahash.js";
+import { checkMandatoryFields, checkForDuplicateFields } from "../utility.js";
+import { encryptData } from "../datahash.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -28,7 +24,6 @@ export default async (req, res) => {
 
       if (!duplicateFieldsErrors.length) {
         let result = await createRowInTable(body, "user");
-        console.log(result);
         res.send({
           isSuccessful: true,
           message: `User is created successfully with the id :: ${id}`,
