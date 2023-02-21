@@ -1,11 +1,10 @@
-const { option } = require("yargs");
-let regex = require("./regex");
+import { regex } from "./regex.js";
 
 //mandatory fields of entities
 let mandatoryFields = {
   user: ["name", "mobile", "email", "password"],
   card: ["nameOnCard", "cardType", "cardNumber", "email", "expDate", "cvv"],
-  trans: ["email", "cardType", "cardNumber", "transAmount"],
+  transaction: ["email", "cardType", "cardNumber", "transAmount"],
 };
 
 //unique fields of entities
@@ -15,7 +14,7 @@ let uniqueFields = {
 };
 
 //check for mandatory fields
-module.exports.mandatoryFields = checkMandatoryFields = (body, entity) => {
+export const checkMandatoryFields = (body, entity) => {
   let errors = [];
   let attribuesOfEntity = Object.keys(body);
   mandatoryFields[entity].forEach((attribute) => {
@@ -43,18 +42,20 @@ module.exports.mandatoryFields = checkMandatoryFields = (body, entity) => {
 };
 
 //check for duplicate fields
-module.exports.checkDuplicateFields = checkForDuplicateFields = (
-  body,
-  entityData,
-  entity
-) => {
+export const checkForDuplicateFields = (body, data, entity) => {
   let errors = [];
-  entityData.forEach((user) => {
+  data.forEach((each) => {
     uniqueFields[entity].forEach((key) => {
       let value = body[key];
       value = isNaN(value) ? value.toLowerCase() : value;
-      if (value == user[key]) {
-        errors.push(key);
+      if (entity == "card") {
+        if (value == each["card_number"]) {
+          errors.push("card_number");
+        }
+      } else if (entity == "user") {
+        if (value == each[key]) {
+          errors.push(key);
+        }
       }
     });
   });
@@ -62,7 +63,7 @@ module.exports.checkDuplicateFields = checkForDuplicateFields = (
 };
 
 //process cashback for a transaction
-module.exports.processCashback = function processCashback(rule, TA) {
+export const processCashback = (rule, TA) => {
   let cashback;
   if (rule.startsWith("min")) {
     let [option1, option2, option3] = rule.split(" ");

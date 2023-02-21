@@ -1,6 +1,6 @@
 //regex for attributes of user, card entities
 
-let regex = {
+export const regex = {
   name: /^[a-zA-Z ]+$/,
   email: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
   password:
@@ -16,5 +16,3 @@ let regex = {
   cardType: /^[a-zA-Z]+$/,
   transAmount: /^[1-9]/,
 };
-
-module.exports = regex;
