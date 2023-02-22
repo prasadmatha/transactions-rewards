@@ -3,20 +3,15 @@ import dotenv from "dotenv";
 dotenv.config();
 
 let pool;
-const mysqlConnection = () => {
-  try {
-    pool = mysql
-      .createPool({
-        host: process.env.host,
-        user: process.env.username,
-        password: process.env.password,
-        database: process.env.database,
-      })
-      .promise();
-  } catch (err) {
-    console.log(err.message);
-    process.exit(1);
-  }
+const mysqlConnection = async () => {
+  pool = mysql
+    .createPool({
+      host: process.env.host,
+      user: process.env.username,
+      password: process.env.password,
+      database: process.env.database,
+    })
+    .promise();
 };
 
 mysqlConnection();
@@ -37,13 +32,14 @@ export async function getUserWithCardNumber(body) {
 
 export const createRowInTable = async (body, entity) => {
   let query;
+  let result;
+
   if (entity == "user") {
     query = `insert into user (id,name,mobile,email,password,status) values(${
       body.id
     },'${body.name}',
     ${body.mobile},'${body.email.toLowerCase()}','${body.password}','Active')`;
-    const result = await pool.query(query);
-    return result[0];
+    result = await pool.query(query);
   } else if (entity == "card") {
     query = `insert into card (id,user_id,card_number,name_on_card,card_type,exp_date,cvv,status) values(${
       body.id
@@ -53,12 +49,12 @@ export const createRowInTable = async (body, entity) => {
     }','${body.cardType.toLowerCase()}','${body.expDate}',${
       body.cvv
     },'Active')`;
-    const result = await pool.query(query);
-    return result[0];
+    result = await pool.query(query);
   } else if (entity == "trans_history") {
     query = `insert into trans_history (id,user_id,card_id,card_type,trans_amount,cashback,date_time) values(${body.id},${body.user_id},
     ${body.card_id},'${body.cardType}',${body.transAmount},${body.cashback},'${body.dateTime}')`;
-    const result = await pool.query(query);
-    return result[0];
+    result = await pool.query(query);
   }
+
+  return result[0];
 };
