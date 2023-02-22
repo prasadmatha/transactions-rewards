@@ -9,23 +9,26 @@ export default async (req, res) => {
   let body = req.body;
   let mandatoryFieldsErrors = checkMandatoryFields(body, "transaction"); //check mandatory fields
   if (!mandatoryFieldsErrors.length) {
+    //if no mandatory fields errors
     let { transAmount } = req.body;
-    let result = await getData("reward_rules");
+    let result = await getData("reward_rules"); //get reward_rules data
+    //get data of given card type in request body
     result = result.filter(
       (each) => each.card_type == body.cardType.toLowerCase()
     );
-    let MTA = result[0].MTA; //get minimum transaction amount
-    let keys = Object.keys(result[0]); //keys of reward rules row object
+    let MTA = result[0].MTA; //get minimum transaction amount of the card type
+    let keys = Object.keys(result[0]); //keys of row object of the card type
     let transactionAmountLimit = undefined;
     let ruleFound = undefined; //to check for cash back rule found for this card
     let ruleApplicable = undefined; //to assign cash back rule of this card
-    let userFound = await getUserWithCardNumber(body);
+    let userFound = await getUserWithCardNumber(body); //checking whether user exists with given email, card_number, card_type in the request body
     if (userFound.length) {
-      body.user_id = userFound[0].user_id;
-      body.card_id = userFound[0].id;
+      //if user found
+      body.user_id = userFound[0].user_id; //user id
+      body.card_id = userFound[0].id; //card id
       if (transAmount >= MTA) {
-        let cashback;
         //if transaction amount >= minimum transaction amount
+        let cashback;
         keys.forEach((each) => {
           //finding rule applicable for cashback
           if (each.endsWith("%_MTA")) {
