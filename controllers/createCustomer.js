@@ -28,7 +28,7 @@ export default async (req, res) => {
         //if no duplicate fields errors
         let result = await createRowInTable(body, "user"); //create a row in user table
         //sending response to client
-        res.send({
+        res.status(200).send({
           isSuccessful: true,
           message: `User is created successfully with the id :: ${id}`,
         });
@@ -42,7 +42,7 @@ export default async (req, res) => {
     } else {
       let result = await createRowInTable(body, "user"); //create a row in user table
       //sending successful response to client
-      res.send({
+      res.status(200).send({
         isSuccessful: true,
         message: `User is created successfully with the id :: ${id}`,
       });

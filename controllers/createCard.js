@@ -35,7 +35,7 @@ export default async (req, res) => {
           //if no duplicate fields errors then create row in card table and send successful response to client
           //body.cardNumber = encryptedCardNumber;
           let result = await createRowInTable(body, "card");
-          res.send({
+          res.status(200).send({
             isSuccessful: true,
             message: `Card is saved successfully with the id :: ${id}`,
           });
@@ -51,7 +51,7 @@ export default async (req, res) => {
         //body.cardNumber = encryptedCardNumber;
         let result = await createRowInTable(body, "card"); //creating a row in card table
         //sending successful response to client
-        res.send({
+        res.status(200).send({
           isSuccessful: true,
           message: `Card is saved successfully with the id :: ${id}`,
         });
