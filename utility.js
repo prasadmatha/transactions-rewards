@@ -65,6 +65,7 @@ export const checkForDuplicateFields = (body, data, entity) => {
 //process cashback for a transaction
 export const processCashback = (rule, TA) => {
   let cashback;
+
   if (rule.startsWith("min")) {
     let [option1, option2, option3] = rule.split(" ");
     option2 = parseInt(option2);
@@ -87,5 +88,6 @@ export const processCashback = (rule, TA) => {
     rule = parseInt(rule);
     cashback = rule;
   }
+
   return Math.ceil(cashback);
 };
