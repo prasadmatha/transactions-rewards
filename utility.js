@@ -63,31 +63,30 @@ export const checkForDuplicateFields = (body, data, entity) => {
 };
 
 //process cashback for a transaction
-export const processCashback = (rule, TA) => {
+export const processCashback = (rule) => {
   let cashback;
 
-  if (rule.startsWith("min")) {
-    let [option1, option2, option3] = rule.split(" ");
-    option2 = parseInt(option2);
-    option3 = (parseInt(option3.split("%")[0]) * TA) / 100;
-    cashback = Math.min(option2, option3);
-  } else if (rule.startsWith("max")) {
-    let [option1, option2, option3] = rule.split(" ");
-    option2 = parseInt(option2);
-    option3 = (parseInt(option3.split("%")[0]) * TA) / 100;
-    cashback = Math.max(option2, option3);
-  } else if (rule.endsWith("%_TA") && rule.includes(",")) {
-    let [option1, option2] = rule.split(",");
-    option1 = parseInt(option1);
-    option2 = (parseInt(option2.split("%")[0]) * TA) / 100;
-    cashback = option1 + option2;
-  } else if (rule.endsWith("%_TA")) {
-    rule = parseInt(rule.split("_")[0]);
-    cashback = (rule * TA) / 100;
-  } else {
-    rule = parseInt(rule);
-    cashback = rule;
+  switch (rule.reward_type) {
+    case "percent":
+      cashback = (rule.percent * rule.trans_amount) / 100;
+      break;
+    case "flat":
+      cashback = rule.flat;
+      break;
+    case "min":
+      cashback = Math.min((rule.percent * rule.trans_amount) / 100, rule.flat);
+      break;
+    case "max":
+      cashback = Math.max((rule.percent * rule.trans_amount) / 100, rule.flat);
+      break;
+    case "sum":
+      cashback =
+        rule.trans_amount <= rule.to_amount
+          ? (rule.percent * rule.trans_amount) / 100 + rule.flat
+          : (rule.percent * rule.to_amount) / 100 + rule.flat;
+      break;
+    default:
+      break;
   }
-
   return Math.ceil(cashback);
 };

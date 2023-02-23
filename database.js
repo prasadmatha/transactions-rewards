@@ -46,7 +46,7 @@ export const checkEmailAndCardNumberValid = async (body) => {
 //get reward rule
 export const getRewardRule = async (data) => {
   let query = `select * from card_types inner join reward_rules on card_types.id = reward_rules.card_type_id where 
-  card_type = '${data.card_type}' and min_trans_amount <= ${data.trans_amount} and ${data.trans_amount} between from_amount and to_amount`;
+  card_type = '${data.card_type}' and ${data.trans_amount} >= min_trans_amount and ((${data.trans_amount} between from_amount and to_amount) or (${data.trans_amount} > to_amount and reward_type = 'sum'))`;
   let [rows] = await pool.query(query);
   return rows[0];
 };
@@ -73,10 +73,9 @@ export const createRowInTable = async (body, entity) => {
     },'Active')`;
     result = await pool.query(query);
   } else if (entity == "trans_history") {
-    query = `insert into trans_history (id,user_id,card_id,card_type,trans_amount,cashback,date_time) values(${body.id},${body.user_id},
-    ${body.card_id},'${body.cardType}',${body.transAmount},${body.cashback},'${body.dateTime}')`;
+    query = `insert into trans_history (id,user_id,card_id,trans_amount,cashback) values(${body.trans_id},${body.user_id},
+    ${body.id},${body.trans_amount},${body.cashback})`;
     result = await pool.query(query);
   }
-
   return result[0];
 };
