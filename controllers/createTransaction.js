@@ -2,7 +2,6 @@ import { checkMandatoryFields, processCashback } from "../utility.js";
 import {
   getData,
   createRowInTable,
-  getUserWithCardNumber,
   checkEmailAndCardNumberValid,
   getRewardRule,
 } from "../database.js";
@@ -28,12 +27,10 @@ export default async (req, res) => {
         result.cashback = 0;
       }
       let response = await createRowInTable(result, "trans_history");
-      res
-        .status(200)
-        .send({
-          isSuccessful: true,
-          message: `Transaction is successful with cashback :: ${result.cashback}`,
-        });
+      res.status(200).send({
+        isSuccessful: true,
+        message: `Transaction is successful with cashback :: ${result.cashback}`,
+      });
     } else {
       res
         .status(400)
