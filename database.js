@@ -1,5 +1,6 @@
 import mysql from "mysql2";
 import dotenv from "dotenv";
+import { query } from "express";
 dotenv.config();
 
 let pool;
@@ -14,13 +15,16 @@ const mysqlConnection = async () => {
     .promise();
 };
 
+//initializing connection to mysql
 mysqlConnection();
 
+//get data of an entity
 export async function getData(entity) {
   const [rows] = await pool.query(`select * from ${entity}`);
   return rows;
 }
 
+//get user details with card number
 export async function getUserWithCardNumber(body) {
   const [rows] = await pool.query(
     `select * from user inner join card on user.id = card.user_id where email = '${body.email.toLowerCase()}' and card_number = '${
@@ -30,6 +34,24 @@ export async function getUserWithCardNumber(body) {
   return rows;
 }
 
+//getUserWithEmailAndCardNumber
+export const checkEmailAndCardNumberValid = async (body) => {
+  let query = `select * from user inner join card on user.id = card.user_id where email = '${body.email.toLowerCase()}' and card_number = '${
+    body.cardNumber
+  }'`;
+  let [rows] = await pool.query(query);
+  return rows[0];
+};
+
+//get reward rule
+export const getRewardRule = async (data) => {
+  let query = `select * from card_types inner join reward_rules on card_types.id = reward_rules.card_type_id where 
+  card_type = '${data.card_type}' and min_trans_amount <= ${data.trans_amount} and ${data.trans_amount} between from_amount and to_amount`;
+  let [rows] = await pool.query(query);
+  return rows[0];
+};
+
+//creating a row in a table
 export const createRowInTable = async (body, entity) => {
   let query;
   let result;

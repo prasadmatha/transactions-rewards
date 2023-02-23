@@ -22,7 +22,7 @@ export default async (req, res) => {
       let userID = userExists[0].id; //user_id of user
       const cards = await getData("card"); //get cards data
       //let encryptedCardNumber = await encryptData(body.cardNumber, saltrounds);
-      let id = cards.length ? cards[cards.length - 1].id + 1 : 1; //
+      let id = cards.length ? cards[cards.length - 1].id + 1 : 1; // id of new card entry
       body.id = id;
       body.userID = userID;
       if (cards.length) {

@@ -4,7 +4,7 @@ import { regex } from "./regex.js";
 let mandatoryFields = {
   user: ["name", "mobile", "email", "password"],
   card: ["nameOnCard", "cardType", "cardNumber", "email", "expDate", "cvv"],
-  transaction: ["email", "cardType", "cardNumber", "transAmount"],
+  transaction: ["email", "cardNumber", "transAmount"],
 };
 
 //unique fields of entities
