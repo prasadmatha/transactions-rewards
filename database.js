@@ -23,16 +23,6 @@ export async function getData(entity) {
   return rows;
 }
 
-//get user details with card number
-export async function getUserWithCardNumber(body) {
-  const [rows] = await pool.query(
-    `select * from user inner join card on user.id = card.user_id where email = '${body.email.toLowerCase()}' and card_number = '${
-      body.cardNumber
-    }' and card_type = '${body.cardType.toLowerCase()}'`
-  );
-  return rows;
-}
-
 //getUserWithEmailAndCardNumber
 export const checkEmailAndCardNumberValid = async (body) => {
   let query = `select * from user inner join card on user.id = card.user_id where email = '${body.email.toLowerCase()}' and card_number = '${
