@@ -15,27 +15,29 @@ export default async (req, res) => {
     const users = await getData("user"); //get users data
     let encryptedPassword = await encryptData(body.password, saltrounds); //encrypt password
     body.password = encryptedPassword;
-    let id = users.length ? users[users.length - 1].id + 1 : 1;
+    let id = users.length ? users[users.length - 1].id + 1 : 1; //id of a new user
     body.id = id;
     if (users.length) {
+      //if users data exists then check for duplicate fields errors
       duplicateFieldsErrors = checkForDuplicateFields(body, users, "user");
     }
     if (!duplicateFieldsErrors.length) {
+      //if no duplicate fields errors
       let result = await createRowInTable(body, "user"); //create a row in user table
-      //sending response to client
+      //sending successful response to client
       res.status(200).send({
         isSuccessful: true,
         message: `User is created successfully with the id :: ${id}`,
       });
     } else {
+      //if duplicate fields errors exists sending response to client indicating duplicate fields errors
       res.status(400).send({
         isSuccessful: true,
         message: `${duplicateFieldsErrors.join(", ")} already exists`,
       });
     }
   } else {
-    //if mandatory fields errors exists
-    //sending response to client indicating mandatory fields errors
+    //if mandatory fields errors exists sending response to client indicating mandatory fields errors
     res.status(400).send({
       isSuccessful: false,
       message: `Please provide mandatory fields :: ${mandatoryFieldsErrors.join(

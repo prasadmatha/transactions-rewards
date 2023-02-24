@@ -1,6 +1,5 @@
 import mysql from "mysql2";
 import dotenv from "dotenv";
-import { query } from "express";
 dotenv.config();
 
 let pool;
@@ -57,12 +56,14 @@ export const createRowInTable = async (body, entity) => {
   let result;
 
   if (entity == "user") {
+    //if entity is user
     query = `insert into user (id,name,mobile,email,password,status) values(${
       body.id
     },'${body.name}',
     ${body.mobile},'${body.email.toLowerCase()}','${body.password}','Active')`;
     result = await pool.query(query);
   } else if (entity == "card") {
+    //if entity is card
     query = `insert into card (id,user_id,card_number,name_on_card,card_type,exp_date,cvv,status) values(${
       body.id
     },${body.userID},
@@ -73,6 +74,7 @@ export const createRowInTable = async (body, entity) => {
     },'Active')`;
     result = await pool.query(query);
   } else if (entity == "trans_history") {
+    //if entity is trans_history
     query = `insert into trans_history (id,user_id,card_id,trans_amount,cashback) values(${body.trans_id},${body.user_id},
     ${body.id},${body.trans_amount},${body.cashback})`;
     result = await pool.query(query);

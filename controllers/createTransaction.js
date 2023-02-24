@@ -19,7 +19,7 @@ export default async (req, res) => {
       let trans_history_data = await getData("trans_history"); //get trans_history data
       let trans_id = trans_history_data.length
         ? trans_history_data[trans_history_data.length - 1].id + 1
-        : 1;
+        : 1; //id of a new transaction
       result.trans_id = trans_id;
       if (cashbackrule != undefined) {
         //if reward rule found
@@ -37,9 +37,10 @@ export default async (req, res) => {
       });
     } else {
       //sending response to client indicating invalid email or card number
-      res
-        .status(400)
-        .send({ isSuccessful: false, message: "Invalid Email or Card Number" });
+      res.status(400).send({
+        isSuccessful: false,
+        message: "Invalid Email or Card Number",
+      });
     }
   } else {
     //sending response to client to indicating mandatory fields errors
