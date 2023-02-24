@@ -5,7 +5,7 @@ export default async (req, res) => {
   //sending successful response to client with users data
   res.status(200).send({
     isSuccessful: true,
-    message: "Received user details successfully",
+    message: "Received users details successfully",
     response: rows,
   });
 };
